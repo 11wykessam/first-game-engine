@@ -12,8 +12,6 @@ import com.whyx.lwjgltest.engine.io.graphics.mesh.IMesh;
 import com.whyx.lwjgltest.engine.io.graphics.mesh.Mesh;
 import com.whyx.lwjgltest.engine.io.graphics.shader.Shader;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import org.lwjgl.opengl.GL33;
 
 /**

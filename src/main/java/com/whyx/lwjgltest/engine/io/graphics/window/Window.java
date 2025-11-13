@@ -46,7 +46,6 @@ import lombok.Setter;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
 /**
