@@ -5,7 +5,6 @@ import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.DEFAULT_TA
 import com.whyx.lwjgltest.engine.GameEngine;
 import com.whyx.lwjgltest.engine.io.IGameLogic;
 import com.whyx.lwjgltest.engine.io.graphics.IWindow;
-import com.whyx.lwjgltest.engine.io.graphics.Window;
 import com.whyx.lwjgltest.engine.io.graphics.WindowOptions;
 
 /**
