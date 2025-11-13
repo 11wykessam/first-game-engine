@@ -1,4 +1,4 @@
-package com.whyx.lwjgltest.engine.io.graphics;
+package com.whyx.lwjgltest.engine.io.graphics.window;
 
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.DEFAULT_TARGET_FPS;
 

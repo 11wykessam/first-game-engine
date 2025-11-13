@@ -1,6 +1,6 @@
 package com.whyx.lwjgltest.engine.io;
 
-import com.whyx.lwjgltest.engine.io.graphics.IWindow;
+import com.whyx.lwjgltest.engine.io.graphics.window.IWindow;
 
 /**
  * @author Samuel Wykes.
@@ -8,12 +8,14 @@ import com.whyx.lwjgltest.engine.io.graphics.IWindow;
  */
 public interface IGameLogic {
 
-  void init() throws Exception;
+  void init();
 
   void input(final IWindow window);
 
   void update(final IWindow window, final float interval);
 
   void render(final IWindow window);
+
+  void cleanup();
 
 }

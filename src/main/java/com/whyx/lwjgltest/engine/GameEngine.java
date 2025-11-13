@@ -1,9 +1,9 @@
 package com.whyx.lwjgltest.engine;
 
 import com.whyx.lwjgltest.engine.io.IGameLogic;
-import com.whyx.lwjgltest.engine.io.graphics.IWindow;
-import com.whyx.lwjgltest.engine.io.graphics.Window;
-import com.whyx.lwjgltest.engine.io.graphics.WindowOptions;
+import com.whyx.lwjgltest.engine.io.graphics.window.IWindow;
+import com.whyx.lwjgltest.engine.io.graphics.window.Window;
+import com.whyx.lwjgltest.engine.io.graphics.window.WindowOptions;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -80,6 +80,7 @@ public class GameEngine implements Runnable {
   @Override
   public void run() {
     this.getWindow().init();
+    this.getGame().init();
     this.loop();
     this.cleanup();
   }
@@ -140,6 +141,7 @@ public class GameEngine implements Runnable {
    * Clean up the game.
    */
   private void cleanup() {
+    this.getGame().cleanup();
     // this needs to go last.
     this.getWindow().cleanup();
   }

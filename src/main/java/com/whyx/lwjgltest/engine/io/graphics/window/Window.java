@@ -1,4 +1,4 @@
-package com.whyx.lwjgltest.engine.io.graphics;
+package com.whyx.lwjgltest.engine.io.graphics.window;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
@@ -14,6 +14,7 @@ import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
 import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
@@ -22,7 +23,9 @@ import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowMonitor;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -30,6 +33,7 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL.createCapabilities;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 import com.whyx.lwjgltest.engine.io.input.KeyboardCallbacks;
@@ -39,8 +43,10 @@ import java.nio.IntBuffer;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -95,6 +101,17 @@ public class Window implements IWindow {
   private long windowId;
 
   /**
+   * Set whether the viewport should be resized.
+   */
+  @Setter
+  private boolean shouldResize;
+
+  @Getter
+  private boolean fullscreen;
+
+  private final int[] windowPosX = new int[1], windowPosY = new int[1];
+
+  /**
    * Constructor.
    * @param title Initial window title.
    * @param width Initial window width.
@@ -141,14 +158,14 @@ public class Window implements IWindow {
     // Create the window.
     this.setWindowId(
         glfwCreateWindow(
-            this.getWidth(),
-            this.getHeight(),
-            this.getTitle(),
+            this.width,
+            this.height,
+            this.title,
             0,
             0
         )
     );
-    if (this.getWindowId() == 0) {
+    if (this.windowId == 0) {
       throw new RuntimeException("Failed to create the GLFW window.");
     }
 
@@ -158,7 +175,7 @@ public class Window implements IWindow {
       final IntBuffer pHeight = stack.mallocInt(1); // int*
 
       // Get the window size passed to glfwCreateWindow
-      glfwGetWindowSize(this.getWindowId(), pWidth, pHeight);
+      glfwGetWindowSize(this.windowId, pWidth, pHeight);
 
       // Get the resolution of the primary monitor
       final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -166,7 +183,7 @@ public class Window implements IWindow {
       if (vidmode != null) {
         // Center the window
         glfwSetWindowPos(
-            this.getWindowId(),
+            this.windowId,
             (vidmode.width() - pWidth.get(0)) / 2,
             (vidmode.height() - pHeight.get(0)) / 2
         );
@@ -174,22 +191,25 @@ public class Window implements IWindow {
     } // the stack frame is popped automatically
 
     // Make the OpenGL context current
-    glfwMakeContextCurrent(this.getWindowId());
+    glfwMakeContextCurrent(this.windowId);
     createCapabilities();
     // Enable v-sync
     glfwSwapInterval(1);
 
     // Make the window visible
-    glfwShowWindow(this.getWindowId());
+    glfwShowWindow(this.windowId);
   }
 
   /**
    * Set up the input callbacks.
    */
   private void initCallbacks() {
-    glfwSetKeyCallback(this.getWindowId(), this.getKeyboardCallbacks());
-    glfwSetMouseButtonCallback(this.getWindowId(), this.getMouseButtonCallbacks());
-    glfwSetCursorPosCallback(this.getWindowId(), this.getMouseMoveCallbacks());
+    glfwSetKeyCallback(this.windowId, this.keyboardCallbacks);
+    glfwSetMouseButtonCallback(this.windowId, this.mouseButtonCallbacks);
+    glfwSetCursorPosCallback(this.windowId, this.mouseMoveCallbacks);
+    glfwSetWindowSizeCallback(this.windowId, (window, width, height) -> {
+      this.resize(width, height);
+    });
   }
 
   /**
@@ -201,12 +221,20 @@ public class Window implements IWindow {
   }
 
   /**
-   * Check whether window should close.
-   * @return {@code true} if window should close.
+   * Check whether the window should close.
+   * @return {@code true} if the window should close.
    */
   @Override
   public boolean windowShouldClose() {
-    return glfwWindowShouldClose(this.getWindowId());
+    return glfwWindowShouldClose(this.windowId);
+  }
+
+  /**
+   * Close the window.
+   */
+  @Override
+  public void close() {
+    GLFW.glfwSetWindowShouldClose(this.windowId, true);
   }
 
   /**
@@ -214,20 +242,49 @@ public class Window implements IWindow {
    */
   @Override
   public void update() {
-    glfwSwapBuffers(this.getWindowId());
+    glfwSwapBuffers(this.windowId);
+    if (this.shouldResize) {
+      glViewport(0, 0, this.width, this.height);
+      this.setShouldResize(false);
+    }
   }
 
   /**
-   * Free up resources used by window.
+   * Free up resources used by the window.
    */
   public void cleanup() {
     // Destroy the window.
-    glfwFreeCallbacks(this.getWindowId());
-    glfwDestroyWindow(this.getWindowId());
+    glfwFreeCallbacks(this.windowId);
+    glfwDestroyWindow(this.windowId);
 
     // Terminate GLFW.
     glfwTerminate();
     Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+  }
+  
+  public void resize(final int width, final int height) {
+    this.setWidth(width);
+    this.setHeight(height);
+    this.setShouldResize(true);
+  }
+
+  public void setFullscreen(final boolean fullscreen) {
+    this.fullscreen = fullscreen;
+    this.shouldResize = true;
+
+    if (fullscreen) {
+      final long monitor = glfwGetPrimaryMonitor();
+      final GLFWVidMode vidMode = glfwGetVideoMode(monitor);
+
+      if (vidMode != null) {
+        glfwGetWindowPos(this.windowId, this.windowPosX, this.windowPosY);
+        glfwSetWindowMonitor(this.windowId, monitor, 0, 0, vidMode.width(), vidMode.height(), 0);
+      }
+      else {
+        glfwSetWindowMonitor(this.windowId, 0, this.windowPosX[0], this.windowPosY[0], this.width,
+            this.height, 0);
+      }
+    }
   }
 
 }

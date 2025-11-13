@@ -1,6 +1,7 @@
 package com.whyx.lwjgltest.engine.io.input;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LAST;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -11,7 +12,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
  */
 public class KeyboardCallbacks extends GLFWKeyCallback implements IKeyboardCallbacks {
 
-  private final boolean[] keys = new boolean[GLFW_KEY_LAST];
+  private final boolean[] keysDown = new boolean[GLFW_KEY_LAST];
 
   @Override
   public void invoke(
@@ -21,11 +22,17 @@ public class KeyboardCallbacks extends GLFWKeyCallback implements IKeyboardCallb
       final int action,
       final int mods
   ) {
-    this.keys[key] = action != GLFW_RELEASE;
+    switch (action) {
+      case GLFW_PRESS:
+        this.keysDown[key] = true;
+        break;
+      case GLFW_RELEASE:
+        this.keysDown[key] = false;
+    }
   }
 
   public boolean isKeyDown(final int key) {
-    return this.keys[key];
+    return this.keysDown[key];
   }
 
 }

@@ -1,4 +1,4 @@
-package com.whyx.lwjgltest.engine.io.graphics;
+package com.whyx.lwjgltest.engine.io.graphics.window;
 
 import com.whyx.lwjgltest.engine.io.input.IKeyboardCallbacks;
 import com.whyx.lwjgltest.engine.io.input.IMouseButtonCallbacks;
@@ -46,6 +46,11 @@ public interface IWindow {
   boolean windowShouldClose();
 
   /**
+   * Close the window.
+   */
+  void close();
+
+  /**
    * Cleans up the window before the app closes.
    */
   void cleanup();
@@ -54,5 +59,24 @@ public interface IWindow {
    * Update the window.
    */
   void update();
+
+  /**
+   * Resize the window.
+   * @param width Width to resize to.
+   * @param height Height to resize to.
+   */
+  void resize(int width, int height);
+
+  /**
+   * Enable/disable fullscreen.
+   * @param fullscreen {@code true} to enable fullscreen.}
+   */
+  void setFullscreen(boolean fullscreen);
+
+  /**
+   * Check if the window is fullscreen.
+   * @return {@code true} if the window is fullscreen.
+   */
+  boolean isFullscreen();
 
 }
