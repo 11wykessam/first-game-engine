@@ -24,8 +24,14 @@ public class Vertex {
 
   private final Vector3f colour;
 
+  private final Vector3f texture;
+
   public Optional<Vector3f> getColour() {
     return Optional.ofNullable(this.colour);
+  }
+
+  public Optional<Vector3f> getTexture() {
+    return Optional.ofNullable(this.texture);
   }
 
 }

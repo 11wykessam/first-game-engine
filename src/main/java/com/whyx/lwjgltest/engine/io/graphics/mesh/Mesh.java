@@ -18,13 +18,11 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 /**
- * @author Samuel Wykes.
- * Represents a mesh consisting of multiple vertices and indices.
+ * @author Samuel Wykes. Represents a mesh consisting of multiple vertices and indices.
  */
 public abstract class Mesh implements IGameLogic, IMesh {
 
   @NonNull
-  @Getter
   private final List<Vertex> vertices;
 
   @NonNull
@@ -36,7 +34,7 @@ public abstract class Mesh implements IGameLogic, IMesh {
 
   private Integer vertexArrayObject;
 
-  private Integer vertexBufferObject, colourBufferObject, indexBufferObject;
+  private Integer vertexBufferObject, colourBufferObject, textureBufferObject, indexBufferObject;
 
   public Mesh(final List<Vertex> vertices, final List<Integer> indices, final Renderer renderer) {
     this.vertices = vertices;
@@ -53,13 +51,39 @@ public abstract class Mesh implements IGameLogic, IMesh {
     this.vertexArrayObject = glGenVertexArrays();
     glBindVertexArray(this.vertexArrayObject);
 
+    int currentIndex = 0;
+
     final FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 3);
     this.vertices.stream()
         .map(Vertex::getPosition)
         .flatMap(position -> Stream.of(position.x, position.y, position.z))
         .forEach(vertexBuffer::put);
     vertexBuffer.flip();
-    this.vertexBufferObject = this.storeFloatBuffer(vertexBuffer, 0, 3);
+    this.vertexBufferObject = this.storeFloatBuffer(vertexBuffer, currentIndex++, 3);
+
+    final int colourCount = (int) this.getColourCount();
+    final FloatBuffer colourBuffer = MemoryUtil.memAllocFloat(colourCount * 3);
+    if (colourCount > 0) {
+      this.vertices.stream()
+          .map(Vertex::getColour)
+          .filter(Optional::isPresent)
+          .flatMap(colour -> Stream.of(colour.get().x, colour.get().y, colour.get().z))
+          .forEach(colourBuffer::put);
+      colourBuffer.flip();
+      this.colourBufferObject = this.storeFloatBuffer(colourBuffer, currentIndex++, colourCount);
+    }
+
+    final int textureCount = (int) this.getTextureCount();
+    final FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(textureCount * 3);
+    if (textureCount > 0) {
+      this.vertices.stream()
+          .map(Vertex::getTexture)
+          .filter(Optional::isPresent)
+          .flatMap(colour -> Stream.of(colour.get().x, colour.get().y, colour.get().z))
+          .forEach(textureBuffer::put);
+      textureBuffer.flip();
+      this.textureBufferObject = this.storeFloatBuffer(textureBuffer, currentIndex, textureCount);
+    }
 
     final IntBuffer indicesBuffer = MemoryUtil.memAllocInt(this.indices.size());
     this.indices.forEach(indicesBuffer::put);
@@ -73,6 +97,13 @@ public abstract class Mesh implements IGameLogic, IMesh {
     // Free up buffers.
     MemoryUtil.memFree(vertexBuffer);
     MemoryUtil.memFree(indicesBuffer);
+
+    if (colourCount > 0) {
+      MemoryUtil.memFree(colourBuffer);
+    }
+    if (textureCount > 0) {
+      MemoryUtil.memFree(textureBuffer);
+    }
 
     this.renderer.renderMesh(this);
   }
@@ -90,6 +121,10 @@ public abstract class Mesh implements IGameLogic, IMesh {
   public void cleanup() {
     glDeleteBuffers(this.vertexBufferObject);
     glDeleteBuffers(this.indexBufferObject);
+    if (this.getColourCount() > 0)
+      glDeleteBuffers(this.colourBufferObject);
+    if (this.getTextureCount() > 0)
+      glDeleteBuffers(this.textureBufferObject);
 
     glDeleteVertexArrays(this.vertexArrayObject);
   }
@@ -108,6 +143,27 @@ public abstract class Mesh implements IGameLogic, IMesh {
   @Override
   public int getColourBufferObject() {
     return this.colourBufferObject;
+  }
+
+  @Override
+  public long getVertexCount() {
+    return this.vertices.size();
+  }
+
+  @Override
+  public long getColourCount() {
+    return this.vertices.stream()
+        .map(Vertex::getColour)
+        .filter(Optional::isPresent)
+        .count();
+  }
+
+  @Override
+  public long getTextureCount() {
+    return this.vertices.stream()
+        .map(Vertex::getTexture)
+        .filter(Optional::isPresent)
+        .count();
   }
 
 }

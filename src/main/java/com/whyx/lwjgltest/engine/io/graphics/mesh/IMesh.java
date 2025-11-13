@@ -9,14 +9,16 @@ import java.util.List;
  */
 public interface IMesh {
 
-  List<Vertex> getVertices();
-
-  List<Integer> getIndices();
-
   int getVertexBufferObject();
 
   int getIndexBufferObject();
 
   int getColourBufferObject();
+
+  long getVertexCount();
+
+  long getColourCount();
+
+  long getTextureCount();
 
 }

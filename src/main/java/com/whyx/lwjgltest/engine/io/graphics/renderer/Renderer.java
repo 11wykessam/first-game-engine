@@ -31,17 +31,32 @@ public class Renderer implements IRenderer {
    */
   @Override
   public void renderMesh(final IMesh mesh) {
+    final int vertexCount =  (int) mesh.getVertexCount();
+    final int colourCount =  (int) mesh.getColourCount();
+    final int textureCount =  (int) mesh.getTextureCount();
+
+    int currentIndex = 0;
+
     glBindVertexArray(mesh.getVertexBufferObject());
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(currentIndex++);
+    if (colourCount > 0)
+      glEnableVertexAttribArray(currentIndex++);
+    if (textureCount > 0)
+      glEnableVertexAttribArray(currentIndex);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndexBufferObject());
 
     if (this.shader != null)
       this.shader.bind();
-    glDrawElements(GL_TRIANGLES, mesh.getIndices().size(), GL33.GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (int) mesh.getVertexCount(), GL33.GL_UNSIGNED_INT, 0);
     if (this.shader != null)
       this.shader.unbind();
 
-    glDisableVertexAttribArray(0);
+    currentIndex = 0;
+    glDisableVertexAttribArray(currentIndex);
+    if(colourCount > 0)
+      glDisableVertexAttribArray(currentIndex++);
+    if(textureCount > 0)
+      glDisableVertexAttribArray(currentIndex);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }

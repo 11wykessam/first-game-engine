@@ -37,12 +37,15 @@ public class FirstGame implements IGameLogic {
         .vertices(List.of(
             Vertex.builder()
                 .position(new Vector3f(-0.5f, 0.0f, 0.0f))
+                .colour(new Vector3f(1.0f, 0.0f, 0.0f))
                 .build(),
             Vertex.builder()
                 .position(new Vector3f(0f, 0.5f, 0.0f))
+                .colour(new Vector3f(0.0f, 1.0f, 0.0f))
                 .build(),
             Vertex.builder()
                 .position(new Vector3f(0.5f, 0.0f, 0.0f))
+                .colour(new Vector3f(0.0f, 0.0f, 1.0f))
                 .build()
         ))
         .indices(List.of(0, 1, 2))
