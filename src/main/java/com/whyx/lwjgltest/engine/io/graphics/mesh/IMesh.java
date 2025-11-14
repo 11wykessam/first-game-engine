@@ -20,8 +20,4 @@ public interface IMesh {
 
   long getVertexCount();
 
-  long getColourCount();
-
-  long getTextureCount();
-
 }

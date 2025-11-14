@@ -33,6 +33,8 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL.createCapabilities;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
@@ -197,6 +199,7 @@ public class Window implements IWindow {
 
     // Make the window visible
     glfwShowWindow(this.windowId);
+    glEnable(GL_DEPTH_TEST);
   }
 
   /**

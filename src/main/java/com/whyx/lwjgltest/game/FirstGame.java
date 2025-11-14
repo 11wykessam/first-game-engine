@@ -21,6 +21,7 @@ import com.whyx.lwjgltest.engine.io.graphics.vertex.Vertex;
 import com.whyx.lwjgltest.engine.io.graphics.window.IWindow;
 import java.util.List;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * @author Samuel Wykes. Dummy game used to test the engine.
@@ -44,21 +45,48 @@ public class FirstGame implements IGameLogic {
         .shader(this.shader)
         .build();
 
-
     final float size = 0.5f;
 
     final List<Vertex> vertices = List.of(
         // Front face vertices (z = size)
-        Vertex.builder().position(new Vector3f(-size, size, size)).build(),    // 0: front top left
-        Vertex.builder().position(new Vector3f(size, size, size)).build(),     // 1: front top right
-        Vertex.builder().position(new Vector3f(size, -size, size)).build(),    // 2: front bottom right
-        Vertex.builder().position(new Vector3f(-size, -size, size)).build(),   // 3: front bottom left
+        Vertex.builder()
+            .position(new Vector3f(-size, size, size))
+            .colour(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f))
+            .build(),    // 0: front top left
+        Vertex.builder()
+            .position(new Vector3f(size, size, size))
+            .colour(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f))
+            .build(),     // 1: front top right
+        Vertex.builder()
+            .position(new Vector3f(size, -size, size))
+            .colour(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f))
+            .build(),
+        // 2: front bottom right
+        Vertex.builder()
+            .position(new Vector3f(-size, -size, size))
+            .colour(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f))
+            .build(),
+        // 3: front bottom left
 
         // Back face vertices (z = -size)
-        Vertex.builder().position(new Vector3f(-size, size, -size)).build(),   // 4: back top left
-        Vertex.builder().position(new Vector3f(size, size, -size)).build(),    // 5: back top right
-        Vertex.builder().position(new Vector3f(size, -size, -size)).build(),   // 6: back bottom right
-        Vertex.builder().position(new Vector3f(-size, -size, -size)).build()   // 7: back bottom left
+        Vertex.builder()
+            .position(new Vector3f(-size, size, -size))
+            .colour(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f))
+            .build(),   // 4: back top left
+        Vertex.builder()
+            .position(new Vector3f(size, size, -size))
+            .colour(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f))
+            .build(),    // 5: back top right
+        Vertex.builder()
+            .position(new Vector3f(size, -size, -size))
+            .colour(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f))
+            .build(),
+        // 6: back bottom right
+        Vertex.builder()
+            .position(new Vector3f(-size, -size, -size))
+            .colour(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f))
+            .build()
+        // 7: back bottom left
     );
 
     // Define indices for all faces (counter-clockwise)
@@ -87,7 +115,6 @@ public class FirstGame implements IGameLogic {
         3, 2, 7,    // First triangle
         7, 2, 6     // Second triangle
     );
-
 
     final Mesh firstMesh = Mesh.builder()
         .vertices(vertices)
@@ -120,6 +147,7 @@ public class FirstGame implements IGameLogic {
       window.setFullscreen(!window.isFullscreen());
     }
 
+    this.entity.rotate(new Vector3f(0.001f*interval, 0.001f*interval, 0.0f));
   }
 
   @Override

@@ -43,7 +43,6 @@ public class GameEntity implements IGameEntity {
   }
 
   private void updateWorldMatrix() {
-    System.out.println(this.position + " " + this.rotation + " " + this.scale);
     this.worldMatrix = new Matrix4f()
         .identity()
         .translate(this.position)

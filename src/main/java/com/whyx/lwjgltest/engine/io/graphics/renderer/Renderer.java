@@ -49,17 +49,16 @@ public class Renderer implements IRenderer {
    * @param mesh {@link Mesh} to render.
    */
   private void renderMesh(final IMesh mesh) {
-    final int colourCount =  (int) mesh.getColourCount();
-    final int textureCount =  (int) mesh.getTextureCount();
-
     glBindVertexArray(mesh.getVertexBufferObject());
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndexBufferObject());
 
-    glDrawElements(GL_TRIANGLES, (int) mesh.getIndexCount(), GL33.GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, mesh.getIndexCount(), GL33.GL_UNSIGNED_INT, 0);
 
-    glDisableVertexAttribArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glBindVertexArray(0);
   }
 }

@@ -1,5 +1,6 @@
 package com.whyx.lwjgltest.engine.io.graphics.mesh;
 
+import static com.whyx.lwjgltest.engine.constants.ColourConstants.CLEAR_COLOUR;
 import static org.lwjgl.opengl.GL33.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL33.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL33.GL_FLOAT;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -65,17 +67,15 @@ public class Mesh implements IMesh {
         .flatMap(position -> Stream.of(position.x, position.y, position.z))
         .forEach(vertexBuffer::put);
     vertexBuffer.flip();
-    this.vertexBufferObject = this.storeFloatBuffer(vertexBuffer, 0, this.vertices.size());
+    this.vertexBufferObject = this.storeFloatBuffer(vertexBuffer, 0, 3);
 
-    final FloatBuffer colourBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 3);
+    final FloatBuffer colourBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 4);
     this.vertices.stream()
         .map(Vertex::getColour)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .flatMap(colour -> Stream.of(colour.x, colour.y, colour.z))
+        .flatMap(colour -> Stream.of(colour.x, colour.y, colour.z, colour.w))
         .forEach(colourBuffer::put);
     colourBuffer.flip();
-    this.colourBufferObject = this.storeFloatBuffer(colourBuffer, 1, this.vertices.size());
+    this.colourBufferObject = this.storeFloatBuffer(colourBuffer, 1, 4);
 
     final IntBuffer indicesBuffer = MemoryUtil.memAllocInt(this.indices.size());
     this.indices.forEach(indicesBuffer::put);
@@ -88,6 +88,7 @@ public class Mesh implements IMesh {
 
     // Free up buffers.
     MemoryUtil.memFree(vertexBuffer);
+    MemoryUtil.memFree(colourBuffer);
     MemoryUtil.memFree(indicesBuffer);
   }
 
@@ -99,18 +100,15 @@ public class Mesh implements IMesh {
     final int bufferId = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, bufferId);
     glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-    glVertexAttribPointer(index, 3, GL_FLOAT, false, 0, 0);
+    glVertexAttribPointer(index, size, GL_FLOAT, false, 0, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     return bufferId;
   }
 
   public void cleanup() {
     glDeleteBuffers(this.vertexBufferObject);
+    glDeleteBuffers(this.colourBufferObject);
     glDeleteBuffers(this.indexBufferObject);
-    if (this.getColourCount() > 0)
-      glDeleteBuffers(this.colourBufferObject);
-    if (this.getTextureCount() > 0)
-      glDeleteBuffers(this.textureBufferObject);
 
     glDeleteVertexArrays(this.vertexArrayObject);
   }
@@ -139,22 +137,6 @@ public class Mesh implements IMesh {
   @Override
   public long getVertexCount() {
     return this.vertices.size();
-  }
-
-  @Override
-  public long getColourCount() {
-    return this.vertices.stream()
-        .map(Vertex::getColour)
-        .filter(Optional::isPresent)
-        .count();
-  }
-
-  @Override
-  public long getTextureCount() {
-    return this.vertices.stream()
-        .map(Vertex::getTexture)
-        .filter(Optional::isPresent)
-        .count();
   }
 
 }
