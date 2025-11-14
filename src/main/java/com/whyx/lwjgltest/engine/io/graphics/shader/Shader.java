@@ -16,12 +16,19 @@ import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glValidateProgram;
 
 import com.whyx.lwjgltest.engine.utils.FileUtils;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
 
 /**
  * @author Samuel Wykes.
@@ -32,9 +39,12 @@ public class Shader {
   private final String vertexShader, fragmentShader;
   private int vertexId, fragmentId, programId;
 
+  private final Map<String, Integer> uniformLocations;
+
   public Shader(final String vertexPath, final String fragmentPath) {
     this.vertexShader = FileUtils.loadAsString(vertexPath);
     this.fragmentShader = FileUtils.loadAsString(fragmentPath);
+    this.uniformLocations = new HashMap<>();
   }
 
   public void init() {
@@ -88,6 +98,21 @@ public class Shader {
 
   public void unbind() {
     glUseProgram(0);
+  }
+
+  public void createUniform(final String uniformName) throws Exception {
+    final int uniformLocation = glGetUniformLocation(this.programId, uniformName);
+    if (uniformLocation < 0)
+      throw new Exception("Could not find uniform: " + uniformName);
+    this.uniformLocations.put(uniformName, uniformLocation);
+  }
+
+  public void setUniformMatrix4f(final String uniformName, final Matrix4f value) {
+    try (final MemoryStack stack = MemoryStack.stackPush()) {
+      final FloatBuffer fb = stack.mallocFloat(16);
+      value.get(fb);
+      glUniformMatrix4fv(this.uniformLocations.get(uniformName), false, fb);
+    }
   }
 
   public void dispose() {

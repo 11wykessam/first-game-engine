@@ -79,4 +79,16 @@ public interface IWindow {
    */
   boolean isFullscreen();
 
+  /**
+   * Get the width of the window.
+   * @return The width of the window.
+   */
+  int getWidth();
+
+  /**
+   * Get the height of the window.
+   * @return The height of the window.
+   */
+  int getHeight();
+
 }

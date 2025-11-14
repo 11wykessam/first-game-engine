@@ -80,7 +80,13 @@ public class GameEngine implements Runnable {
   @Override
   public void run() {
     this.getWindow().init();
-    this.getGame().init();
+    try {
+      this.getGame().init();
+    }
+    catch (final Exception e) {
+      System.err.println("Failed to initialize game!");
+      return;
+    }
     this.loop();
     this.cleanup();
   }

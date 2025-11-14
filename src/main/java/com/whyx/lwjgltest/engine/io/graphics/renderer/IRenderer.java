@@ -1,6 +1,7 @@
 package com.whyx.lwjgltest.engine.io.graphics.renderer;
 
-import com.whyx.lwjgltest.engine.io.graphics.mesh.IMesh;
+import com.whyx.lwjgltest.engine.io.graphics.camera.ICamera;
+import com.whyx.lwjgltest.engine.io.graphics.entity.IGameEntity;
 
 /**
  * @author Samuel Wykes.
@@ -9,6 +10,6 @@ import com.whyx.lwjgltest.engine.io.graphics.mesh.IMesh;
  */
 public interface IRenderer {
 
-  void renderMesh(final IMesh mesh);
+  void renderEntity(final IGameEntity entity, final ICamera camera);
 
 }

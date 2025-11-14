@@ -8,7 +8,7 @@ import com.whyx.lwjgltest.engine.io.graphics.window.IWindow;
  */
 public interface IGameLogic {
 
-  void init();
+  void init() throws Exception;
 
   void input(final IWindow window);
 
