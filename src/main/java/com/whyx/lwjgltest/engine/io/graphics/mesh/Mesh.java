@@ -14,7 +14,9 @@ import static org.lwjgl.opengl.GL33.glGenBuffers;
 import static org.lwjgl.opengl.GL33.glGenVertexArrays;
 import static org.lwjgl.opengl.GL33.glVertexAttribPointer;
 
+import com.whyx.lwjgltest.engine.io.graphics.renderer.IRenderer;
 import com.whyx.lwjgltest.engine.io.graphics.renderer.Renderer;
+import com.whyx.lwjgltest.engine.io.graphics.texture.ITexture;
 import com.whyx.lwjgltest.engine.io.graphics.vertex.Vertex;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -39,18 +41,21 @@ public class Mesh implements IMesh {
   @Getter
   private final List<Integer> indices;
 
-  @NonNull
-  private final Renderer renderer;
+  private final ITexture texture;
 
   private Integer vertexArrayObject;
 
   private Integer vertexBufferObject, colourBufferObject, textureBufferObject, indexBufferObject;
 
   @Builder
-  public Mesh(final List<Vertex> vertices, final List<Integer> indices, final Renderer renderer) {
+  protected Mesh(
+      final List<Vertex> vertices,
+      final List<Integer> indices,
+      final ITexture texture
+  ) {
     this.vertices = vertices;
     this.indices = indices;
-    this.renderer = renderer;
+    this.texture = texture;
     this.vertexArrayObject = null;
     this.vertexBufferObject = null;
     this.colourBufferObject = null;
@@ -77,6 +82,14 @@ public class Mesh implements IMesh {
     colourBuffer.flip();
     this.colourBufferObject = this.storeFloatBuffer(colourBuffer, 1, 4);
 
+    final FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 2);
+    this.vertices.stream()
+        .map(Vertex::getTexture)
+        .flatMap(texture -> Stream.of(texture.x, texture.y))
+        .forEach(textureBuffer::put);
+    textureBuffer.flip();
+    this.textureBufferObject = this.storeFloatBuffer(textureBuffer, 2, 2);
+
     final IntBuffer indicesBuffer = MemoryUtil.memAllocInt(this.indices.size());
     this.indices.forEach(indicesBuffer::put);
     indicesBuffer.flip();
@@ -90,6 +103,7 @@ public class Mesh implements IMesh {
     MemoryUtil.memFree(vertexBuffer);
     MemoryUtil.memFree(colourBuffer);
     MemoryUtil.memFree(indicesBuffer);
+    MemoryUtil.memFree(textureBuffer);
   }
 
   private int storeFloatBuffer(
@@ -109,6 +123,7 @@ public class Mesh implements IMesh {
     glDeleteBuffers(this.vertexBufferObject);
     glDeleteBuffers(this.colourBufferObject);
     glDeleteBuffers(this.indexBufferObject);
+    glDeleteBuffers(this.textureBufferObject);
 
     glDeleteVertexArrays(this.vertexArrayObject);
   }
@@ -137,6 +152,11 @@ public class Mesh implements IMesh {
   @Override
   public long getVertexCount() {
     return this.vertices.size();
+  }
+
+  @Override
+  public Optional<ITexture> getTexture() {
+    return Optional.ofNullable(this.texture);
   }
 
 }

@@ -11,5 +11,6 @@ public class GameEngineConstants {
 
   public static final String PROJECTION_MATRIX_UNIFORM = "projectionMatrix";
   public static final String WORLD_MATRIX_UNIFORM = "worldMatrix";
+  public static final String TEXTURE_SAMPLER_UNIFORM = "textureSampler";
 
 }

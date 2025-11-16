@@ -17,7 +17,7 @@ import org.joml.Vector4f;
  */
 @AllArgsConstructor
 @Builder
-public class Vertex {
+public class Vertex implements IVertex {
 
   /**
    * Coordinates of the vertex.
@@ -30,6 +30,8 @@ public class Vertex {
   @Getter
   private final Vector4f colour = CLEAR_COLOUR;
 
+  @Builder.Default
+  @Getter
   private final Vector2f texture = new Vector2f(0.0f, 0.0f);
 
 }

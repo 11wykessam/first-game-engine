@@ -1,9 +1,14 @@
 package com.whyx.lwjgltest.engine.io.graphics.renderer;
 
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.PROJECTION_MATRIX_UNIFORM;
+import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.TEXTURE_SAMPLER_UNIFORM;
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.WORLD_MATRIX_UNIFORM;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
@@ -38,9 +43,17 @@ public class Renderer implements IRenderer {
     final IMesh mesh = entity.getMesh();
     mesh.init();
     this.shader.bind();
+    if (mesh.getTexture().isPresent()) {
+      mesh.getTexture().get().init();
+      mesh.getTexture().get().bind();
+    }
     this.shader.setUniformMatrix4f(PROJECTION_MATRIX_UNIFORM, camera.getProjectionMatrix());
     this.shader.setUniformMatrix4f(WORLD_MATRIX_UNIFORM, entity.getWorldMatrix());
+
     this.renderMesh(mesh);
+
+    if (mesh.getTexture().isPresent())
+      mesh.getTexture().get().unbind();
     this.shader.unbind();
   }
 
@@ -52,13 +65,21 @@ public class Renderer implements IRenderer {
     glBindVertexArray(mesh.getVertexBufferObject());
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndexBufferObject());
+
+    if(mesh.getTexture().isPresent()) {
+      this.shader.setUniformInt(TEXTURE_SAMPLER_UNIFORM, 0);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, mesh.getTexture().get().getTextureId());
+    }
 
     glDrawElements(GL_TRIANGLES, mesh.getIndexCount(), GL33.GL_UNSIGNED_INT, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
     glBindVertexArray(0);
   }
 }

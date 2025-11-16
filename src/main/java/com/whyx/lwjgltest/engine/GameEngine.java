@@ -84,7 +84,8 @@ public class GameEngine implements Runnable {
       this.getGame().init();
     }
     catch (final Exception e) {
-      System.err.println("Failed to initialize game!");
+      System.err.println("Failed to initialize game");
+      System.err.println(e.getMessage());
       return;
     }
     this.loop();

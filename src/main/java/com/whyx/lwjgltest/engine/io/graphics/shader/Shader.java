@@ -1,5 +1,8 @@
 package com.whyx.lwjgltest.engine.io.graphics.shader;
 
+import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.PROJECTION_MATRIX_UNIFORM;
+import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.TEXTURE_SAMPLER_UNIFORM;
+import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.WORLD_MATRIX_UNIFORM;
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 import static org.lwjgl.opengl.GL20.GL_FALSE;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
@@ -17,6 +20,7 @@ import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glGetUniformi;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -26,6 +30,7 @@ import static org.lwjgl.opengl.GL20.glValidateProgram;
 import com.whyx.lwjgltest.engine.utils.FileUtils;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
@@ -41,13 +46,16 @@ public class Shader {
 
   private final Map<String, Integer> uniformLocations;
 
-  public Shader(final String vertexPath, final String fragmentPath) {
+  private final List<String> uniforms;
+
+  public Shader(final String vertexPath, final String fragmentPath, final List<String> uniforms) {
     this.vertexShader = FileUtils.loadAsString(vertexPath);
     this.fragmentShader = FileUtils.loadAsString(fragmentPath);
     this.uniformLocations = new HashMap<>();
+    this.uniforms = uniforms;
   }
 
-  public void init() {
+  public void init() throws Exception {
     this.programId = glCreateProgram();
     this.vertexId = glCreateShader(GL_VERTEX_SHADER);
 
@@ -90,6 +98,10 @@ public class Shader {
 
     glDeleteShader(this.vertexId);
     glDeleteShader(this.fragmentId);
+
+    for (final String uniform : this.uniforms) {
+      this.createUniform(uniform);
+    }
   }
 
   public void bind() {
@@ -113,6 +125,10 @@ public class Shader {
       value.get(fb);
       glUniformMatrix4fv(this.uniformLocations.get(uniformName), false, fb);
     }
+  }
+
+  public void setUniformInt(final String uniformName, final int value) {
+    glGetUniformi(this.uniformLocations.get(uniformName), value);
   }
 
   public void dispose() {

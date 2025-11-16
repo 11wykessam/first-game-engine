@@ -1,4 +1,4 @@
-package com.whyx.lwjgltest.game;
+package com.whyx.lwjgltest.game.colourTest;
 
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.PROJECTION_MATRIX_UNIFORM;
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.WORLD_MATRIX_UNIFORM;
@@ -26,7 +26,7 @@ import org.joml.Vector4f;
 /**
  * @author Samuel Wykes. Dummy game used to test the engine.
  */
-public class FirstGame implements IGameLogic {
+public class ColourGame implements IGameLogic {
 
   long arg = 1;
 
@@ -40,7 +40,11 @@ public class FirstGame implements IGameLogic {
 
   @Override
   public void init() throws Exception {
-    this.shader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl");
+    this.shader = new Shader(
+        "/shaders/mainVertex.glsl",
+        "/shaders/mainFragment.glsl",
+          List.of(PROJECTION_MATRIX_UNIFORM, WORLD_MATRIX_UNIFORM)
+        );
     this.renderer = Renderer.builder()
         .shader(this.shader)
         .build();
@@ -119,7 +123,6 @@ public class FirstGame implements IGameLogic {
     final Mesh firstMesh = Mesh.builder()
         .vertices(vertices)
         .indices(indices)
-        .renderer(this.renderer)
         .build();
 
     this.entity = GameEntity.builder()
@@ -129,8 +132,6 @@ public class FirstGame implements IGameLogic {
         .position(new Vector3f(0.0f, 0.0f, -2.0f))
         .build();
     this.shader.init();
-    this.shader.createUniform(PROJECTION_MATRIX_UNIFORM);
-    this.shader.createUniform(WORLD_MATRIX_UNIFORM);
   }
 
   @Override
