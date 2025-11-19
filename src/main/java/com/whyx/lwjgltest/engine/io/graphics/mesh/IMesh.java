@@ -4,8 +4,7 @@ import com.whyx.lwjgltest.engine.io.graphics.texture.ITexture;
 import java.util.Optional;
 
 /**
- * @author Samuel Wykes.
- * Interface representing meshes.
+ * @author Samuel Wykes. Interface representing meshes.
  */
 public interface IMesh {
 

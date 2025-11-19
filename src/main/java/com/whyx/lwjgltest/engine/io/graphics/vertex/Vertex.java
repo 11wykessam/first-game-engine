@@ -2,7 +2,6 @@ package com.whyx.lwjgltest.engine.io.graphics.vertex;
 
 import static com.whyx.lwjgltest.engine.constants.ColourConstants.CLEAR_COLOUR;
 
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +11,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 /**
- * @author Samuel Wykes.
- * Represents a vertex in 3D space.
+ * @author Samuel Wykes. Represents a vertex in 3D space.
  */
 @AllArgsConstructor
 @Builder

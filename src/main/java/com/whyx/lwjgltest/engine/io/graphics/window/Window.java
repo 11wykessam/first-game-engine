@@ -19,6 +19,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorEnterCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
@@ -40,6 +41,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 import com.whyx.lwjgltest.engine.io.input.KeyboardCallbacks;
 import com.whyx.lwjgltest.engine.io.input.MouseButtonCallbacks;
+import com.whyx.lwjgltest.engine.io.input.MouseEnterCallbacks;
 import com.whyx.lwjgltest.engine.io.input.MouseMoveCallbacks;
 import java.nio.IntBuffer;
 import java.util.Objects;
@@ -51,8 +53,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
 /**
- * @author Samuel Wykes.
- * Class responsible for rendering a game window.
+ * @author Samuel Wykes. Class responsible for rendering a game window.
  */
 public class Window implements IWindow {
 
@@ -95,6 +96,12 @@ public class Window implements IWindow {
   private final MouseMoveCallbacks mouseMoveCallbacks;
 
   /**
+   * Responsible for handling GLFW mouse enter/leaving invocations.
+   */
+  @Getter
+  private final MouseEnterCallbacks mouseEnterCallbacks;
+
+  /**
    * Reference to the GLFW window.
    */
   @Getter
@@ -114,9 +121,10 @@ public class Window implements IWindow {
 
   /**
    * Constructor.
-   * @param title Initial window title.
-   * @param width Initial window width.
-   * @param height Initial window height.
+   *
+   * @param title     Initial window title.
+   * @param width     Initial window width.
+   * @param height    Initial window height.
    * @param targetFps Target FPS for the window. If 0, go for screen refresh rate.
    */
   public Window(
@@ -132,6 +140,7 @@ public class Window implements IWindow {
     this.keyboardCallbacks = new KeyboardCallbacks();
     this.mouseButtonCallbacks = new MouseButtonCallbacks();
     this.mouseMoveCallbacks = new MouseMoveCallbacks();
+    this.mouseEnterCallbacks = new MouseEnterCallbacks();
   }
 
   public void init() {
@@ -171,7 +180,7 @@ public class Window implements IWindow {
     }
 
     // Get the thread stack and push a new frame
-    try ( final MemoryStack stack = stackPush() ) {
+    try (final MemoryStack stack = stackPush()) {
       final IntBuffer pWidth = stack.mallocInt(1); // int*
       final IntBuffer pHeight = stack.mallocInt(1); // int*
 
@@ -208,6 +217,7 @@ public class Window implements IWindow {
   private void initCallbacks() {
     glfwSetKeyCallback(this.windowId, this.keyboardCallbacks);
     glfwSetMouseButtonCallback(this.windowId, this.mouseButtonCallbacks);
+    glfwSetCursorEnterCallback(this.windowId, this.mouseEnterCallbacks);
     glfwSetCursorPosCallback(this.windowId, this.mouseMoveCallbacks);
     glfwSetWindowSizeCallback(this.windowId, (window, width, height) -> {
       this.resize(width, height);
@@ -224,6 +234,7 @@ public class Window implements IWindow {
 
   /**
    * Check whether the window should close.
+   *
    * @return {@code true} if the window should close.
    */
   @Override
@@ -263,7 +274,7 @@ public class Window implements IWindow {
     glfwTerminate();
     Objects.requireNonNull(glfwSetErrorCallback(null)).free();
   }
-  
+
   public void resize(final int width, final int height) {
     this.setWidth(width);
     this.setHeight(height);
@@ -281,8 +292,7 @@ public class Window implements IWindow {
       if (vidMode != null) {
         glfwGetWindowPos(this.windowId, this.windowPosX, this.windowPosY);
         glfwSetWindowMonitor(this.windowId, monitor, 0, 0, vidMode.width(), vidMode.height(), 0);
-      }
-      else {
+      } else {
         glfwSetWindowMonitor(this.windowId, 0, this.windowPosX[0], this.windowPosY[0], this.width,
             this.height, 0);
       }

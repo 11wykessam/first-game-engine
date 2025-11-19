@@ -1,6 +1,5 @@
 package com.whyx.lwjgltest.engine.io.graphics.mesh;
 
-import static com.whyx.lwjgltest.engine.constants.ColourConstants.CLEAR_COLOUR;
 import static org.lwjgl.opengl.GL33.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL33.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL33.GL_FLOAT;
@@ -14,8 +13,6 @@ import static org.lwjgl.opengl.GL33.glGenBuffers;
 import static org.lwjgl.opengl.GL33.glGenVertexArrays;
 import static org.lwjgl.opengl.GL33.glVertexAttribPointer;
 
-import com.whyx.lwjgltest.engine.io.graphics.renderer.IRenderer;
-import com.whyx.lwjgltest.engine.io.graphics.renderer.Renderer;
 import com.whyx.lwjgltest.engine.io.graphics.texture.ITexture;
 import com.whyx.lwjgltest.engine.io.graphics.vertex.Vertex;
 import java.nio.FloatBuffer;
@@ -26,7 +23,6 @@ import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 /**

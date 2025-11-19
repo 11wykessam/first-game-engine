@@ -4,7 +4,6 @@ import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.DEFAULT_TA
 
 import com.whyx.lwjgltest.engine.GameEngine;
 import com.whyx.lwjgltest.engine.io.graphics.window.WindowOptions;
-import com.whyx.lwjgltest.game.colourTest.ColourGame;
 import com.whyx.lwjgltest.game.cubeTest.CubeGame;
 
 /**

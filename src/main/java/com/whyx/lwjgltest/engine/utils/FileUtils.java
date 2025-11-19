@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * @author Samuel Wykes.
- * Utils for reading/writing to files.
+ * @author Samuel Wykes. Utils for reading/writing to files.
  */
 public class FileUtils {
 
   /**
    * Load a file as a string from resources.
+   *
    * @param path {@link String} path to a file in resources folder.
    * @return {@link String} file contents.
    */

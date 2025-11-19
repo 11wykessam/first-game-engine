@@ -2,6 +2,7 @@ package com.whyx.lwjgltest.engine.io.graphics.renderer;
 
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.PROJECTION_MATRIX_UNIFORM;
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.TEXTURE_SAMPLER_UNIFORM;
+import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.VIEW_MATRIX_UNIFORM;
 import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.WORLD_MATRIX_UNIFORM;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -25,8 +26,7 @@ import lombok.NonNull;
 import org.lwjgl.opengl.GL33;
 
 /**
- * @author Samuel Wykes.
- * Renderer for the game. Can render invidual {@link Mesh} objects.
+ * @author Samuel Wykes. Renderer for the game. Can render invidual {@link Mesh} objects.
  */
 public class Renderer implements IRenderer {
 
@@ -48,17 +48,20 @@ public class Renderer implements IRenderer {
       mesh.getTexture().get().bind();
     }
     this.shader.setUniformMatrix4f(PROJECTION_MATRIX_UNIFORM, camera.getProjectionMatrix());
+    this.shader.setUniformMatrix4f(VIEW_MATRIX_UNIFORM, camera.getViewMatrix());
     this.shader.setUniformMatrix4f(WORLD_MATRIX_UNIFORM, entity.getWorldMatrix());
 
     this.renderMesh(mesh);
 
-    if (mesh.getTexture().isPresent())
+    if (mesh.getTexture().isPresent()) {
       mesh.getTexture().get().unbind();
+    }
     this.shader.unbind();
   }
 
   /**
    * Renders a mesh.
+   *
    * @param mesh {@link Mesh} to render.
    */
   private void renderMesh(final IMesh mesh) {
@@ -68,7 +71,7 @@ public class Renderer implements IRenderer {
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndexBufferObject());
 
-    if(mesh.getTexture().isPresent()) {
+    if (mesh.getTexture().isPresent()) {
       this.shader.setUniformInt(TEXTURE_SAMPLER_UNIFORM, 0);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, mesh.getTexture().get().getTextureId());

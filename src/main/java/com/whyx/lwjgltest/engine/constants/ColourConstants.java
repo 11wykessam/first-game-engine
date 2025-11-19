@@ -3,8 +3,7 @@ package com.whyx.lwjgltest.engine.constants;
 import org.joml.Vector4f;
 
 /**
- * @author Samuel Wykes.
- * Constants for colours.
+ * @author Samuel Wykes. Constants for colours.
  */
 public class ColourConstants {
 

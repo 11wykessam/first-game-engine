@@ -79,11 +79,10 @@ public class GameEngine implements Runnable {
    */
   @Override
   public void run() {
-    this.getWindow().init();
+    this.window.init();
     try {
-      this.getGame().init();
-    }
-    catch (final Exception e) {
+      this.game.init(this.window);
+    } catch (final Exception e) {
       System.err.println("Failed to initialize game");
       System.err.println(e.getMessage());
       return;
@@ -105,7 +104,7 @@ public class GameEngine implements Runnable {
     int updateCounter = 0;
     int renderCounter = 0;
 
-    while(this.isRunning() && !this.getWindow().windowShouldClose()) {
+    while (this.isRunning() && !this.getWindow().windowShouldClose()) {
       this.getWindow().pollEvents();
 
       final long now = System.currentTimeMillis();
@@ -138,7 +137,7 @@ public class GameEngine implements Runnable {
         updateCounter = 0;
         renderCounter = 0;
         lastSecond = now;
-        System.out.println("FPS: " + this.getFps() + " UPS: " + this.getUps());
+//        System.out.println("FPS: " + this.getFps() + " UPS: " + this.getUps());
       }
 
     }

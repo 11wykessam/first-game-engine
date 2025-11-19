@@ -7,8 +7,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
 /**
- * @author Samuel Wykes.
- * Responsible for handling GLFW keyboard invocations.
+ * @author Samuel Wykes. Responsible for handling GLFW keyboard invocations.
  */
 public class KeyboardCallbacks extends GLFWKeyCallback implements IKeyboardCallbacks {
 

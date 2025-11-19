@@ -6,8 +6,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 /**
- * @author Samuel Wykes.
- * Responsible for handling GLFW mouse button invocations.
+ * @author Samuel Wykes. Responsible for handling GLFW mouse button invocations.
  */
 public class MouseButtonCallbacks extends GLFWMouseButtonCallback implements IMouseButtonCallbacks {
 

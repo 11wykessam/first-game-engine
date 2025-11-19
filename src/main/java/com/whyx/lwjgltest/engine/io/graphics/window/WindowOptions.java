@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * @author Samuel Wykes.
- * Responsible for holding options to pass to a {@link Window}.
+ * @author Samuel Wykes. Responsible for holding options to pass to a {@link Window}.
  */
 @Builder
 @Getter

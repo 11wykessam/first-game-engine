@@ -1,8 +1,7 @@
 package com.whyx.lwjgltest.engine.io.graphics.texture;
 
 /**
- * @author Samuel Wykes.
- * Represents a texture to render to an entity.
+ * @author Samuel Wykes. Represents a texture to render to an entity.
  */
 public interface ITexture {
 
@@ -23,6 +22,7 @@ public interface ITexture {
 
   /**
    * Get the id of this texture.
+   *
    * @return {@code int}.
    */
   int getTextureId();

@@ -18,11 +18,16 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -45,13 +50,22 @@ public class Texture implements ITexture {
    */
   @Override
   public void init() {
-    try (final MemoryStack stack = MemoryStack.stackPush()) {
+    try (
+        final MemoryStack stack = MemoryStack.stackPush();
+        final InputStream is = Texture.class.getResourceAsStream(this.texturePath);
+    ) {
+      final byte[] imageBytes = Objects.requireNonNull(is).readAllBytes();
+
+      final ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageBytes.length);
+      imageBuffer.put(imageBytes);
+      imageBuffer.flip();
+
       final IntBuffer widthBuffer = stack.mallocInt(1);
       final IntBuffer heightBuffer = stack.mallocInt(1);
       final IntBuffer channelBuffer = stack.mallocInt(1);
 
-      final ByteBuffer buffer = stbi_load(
-          this.texturePath,
+      final ByteBuffer buffer = stbi_load_from_memory(
+          imageBuffer,
           widthBuffer,
           heightBuffer,
           channelBuffer,
@@ -74,6 +88,8 @@ public class Texture implements ITexture {
       glGenerateMipmap(GL_TEXTURE_2D);
 
       stbi_image_free(buffer);
+    } catch (final IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

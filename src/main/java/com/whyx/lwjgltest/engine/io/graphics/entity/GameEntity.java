@@ -8,8 +8,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
- * @author Samuel Wykes.
- * Represents an entity to render in the game.
+ * @author Samuel Wykes. Represents an entity to render in the game.
  */
 public class GameEntity implements IGameEntity {
 
@@ -30,10 +29,10 @@ public class GameEntity implements IGameEntity {
 
   @Builder
   private GameEntity(
-    final IMesh mesh,
-    final Vector3f position,
-    final Vector3f rotation,
-    final Float scale
+      final IMesh mesh,
+      final Vector3f position,
+      final Vector3f rotation,
+      final Float scale
   ) {
     this.mesh = mesh;
     this.position = position;
@@ -50,6 +49,36 @@ public class GameEntity implements IGameEntity {
         .rotateY(this.rotation.y)
         .rotateZ(this.rotation.z)
         .scale(this.scale);
+  }
+
+  @Override
+  public Float getX() {
+    return this.position.x;
+  }
+
+  @Override
+  public Float getY() {
+    return this.position.y;
+  }
+
+  @Override
+  public Float getZ() {
+    return this.position.z;
+  }
+
+  @Override
+  public Float getRotationX() {
+    return this.rotation.x;
+  }
+
+  @Override
+  public Float getRotationY() {
+    return this.rotation.y;
+  }
+
+  @Override
+  public Float getRotationZ() {
+    return this.rotation.z;
   }
 
   @Override

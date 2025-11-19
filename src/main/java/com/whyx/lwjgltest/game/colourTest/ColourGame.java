@@ -39,12 +39,12 @@ public class ColourGame implements IGameLogic {
   private ICamera camera;
 
   @Override
-  public void init() throws Exception {
+  public void init(final IWindow window) throws Exception {
     this.shader = new Shader(
         "/shaders/mainVertex.glsl",
         "/shaders/mainFragment.glsl",
-          List.of(PROJECTION_MATRIX_UNIFORM, WORLD_MATRIX_UNIFORM)
-        );
+        List.of(PROJECTION_MATRIX_UNIFORM, WORLD_MATRIX_UNIFORM)
+    );
     this.renderer = Renderer.builder()
         .shader(this.shader)
         .build();
@@ -148,7 +148,7 @@ public class ColourGame implements IGameLogic {
       window.setFullscreen(!window.isFullscreen());
     }
 
-    this.entity.rotate(new Vector3f(0.001f*interval, 0.001f*interval, 0.0f));
+    this.entity.rotate(new Vector3f(0.001f * interval, 0.001f * interval, 0.0f));
   }
 
   @Override

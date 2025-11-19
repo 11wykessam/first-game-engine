@@ -1,8 +1,7 @@
 package com.whyx.lwjgltest.engine.constants;
 
 /**
- * @author Samuel Wykes.
- * Constants for the game.
+ * @author Samuel Wykes. Constants for the game.
  */
 public class GameEngineConstants {
 
@@ -10,6 +9,7 @@ public class GameEngineConstants {
   public static final int DEFAULT_TARGET_FPS = 60;
 
   public static final String PROJECTION_MATRIX_UNIFORM = "projectionMatrix";
+  public static final String VIEW_MATRIX_UNIFORM = "viewMatrix";
   public static final String WORLD_MATRIX_UNIFORM = "worldMatrix";
   public static final String TEXTURE_SAMPLER_UNIFORM = "textureSampler";
 

@@ -1,8 +1,5 @@
 package com.whyx.lwjgltest.engine.io.graphics.shader;
 
-import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.PROJECTION_MATRIX_UNIFORM;
-import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.TEXTURE_SAMPLER_UNIFORM;
-import static com.whyx.lwjgltest.engine.constants.GameEngineConstants.WORLD_MATRIX_UNIFORM;
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 import static org.lwjgl.opengl.GL20.GL_FALSE;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
@@ -36,8 +33,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
 /**
- * @author Samuel Wykes.
- * Responsible for GLSL shading.
+ * @author Samuel Wykes. Responsible for GLSL shading.
  */
 public class Shader {
 
@@ -73,7 +69,7 @@ public class Shader {
     glShaderSource(this.fragmentId, this.fragmentShader);
     glCompileShader(this.fragmentId);
 
-    if(glGetShaderi(this.fragmentId, GL_COMPILE_STATUS) == GL_FALSE) {
+    if (glGetShaderi(this.fragmentId, GL_COMPILE_STATUS) == GL_FALSE) {
       System.err.println("Fragment Shader Failed to Compile!");
       System.err.println(glGetShaderInfoLog(this.fragmentId));
       System.exit(-1);
@@ -114,8 +110,9 @@ public class Shader {
 
   public void createUniform(final String uniformName) throws Exception {
     final int uniformLocation = glGetUniformLocation(this.programId, uniformName);
-    if (uniformLocation < 0)
+    if (uniformLocation < 0) {
       throw new Exception("Could not find uniform: " + uniformName);
+    }
     this.uniformLocations.put(uniformName, uniformLocation);
   }
 

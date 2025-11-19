@@ -78,7 +78,7 @@ public class CubeMesh extends Mesh {
 
       // Back face
       4, 6, 7, 5, 4, 7
-      );
+  );
 
   public CubeMesh(final ITexture texture) {
 
