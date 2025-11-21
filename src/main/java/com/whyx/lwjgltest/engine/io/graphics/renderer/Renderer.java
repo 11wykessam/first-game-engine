@@ -67,7 +67,7 @@ public class Renderer implements IRenderer {
   private void renderMesh(final IMesh mesh) {
     glBindVertexArray(mesh.getVertexBufferObject());
     glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+//    glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndexBufferObject());
 
@@ -81,7 +81,7 @@ public class Renderer implements IRenderer {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+//    glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
     glBindVertexArray(0);
   }

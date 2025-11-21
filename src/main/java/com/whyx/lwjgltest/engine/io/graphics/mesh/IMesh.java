@@ -12,11 +12,9 @@ public interface IMesh {
 
   void cleanup();
 
-  int getVertexBufferObject();
+  Integer getVertexBufferObject();
 
-  int getIndexBufferObject();
-
-  int getColourBufferObject();
+  Integer getIndexBufferObject();
 
   int getIndexCount();
 

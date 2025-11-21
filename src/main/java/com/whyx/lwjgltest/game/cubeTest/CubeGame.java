@@ -149,6 +149,6 @@ public class CubeGame implements IGameLogic {
 
   @Override
   public void cleanup() {
-
+    // TODO: cleanup mesh.
   }
 }

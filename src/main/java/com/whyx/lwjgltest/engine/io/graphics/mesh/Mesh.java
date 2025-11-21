@@ -23,12 +23,19 @@ import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
 /**
  * @author Samuel Wykes. Represents a mesh consisting of multiple vertices and indices.
  */
 public class Mesh implements IMesh {
+
+  private static final Integer POSITION_SIZE = 3;
+  private static final Integer COLOUR_SIZE = 4;
+  private static final Integer TEXTURE_SIZE = 2;
 
   @NonNull
   private final List<Vertex> vertices;
@@ -41,7 +48,8 @@ public class Mesh implements IMesh {
 
   private Integer vertexArrayObject;
 
-  private Integer vertexBufferObject, colourBufferObject, textureBufferObject, indexBufferObject;
+  @Getter
+  private Integer vertexBufferObject, indexBufferObject;
 
   @Builder
   protected Mesh(
@@ -54,7 +62,6 @@ public class Mesh implements IMesh {
     this.texture = texture;
     this.vertexArrayObject = null;
     this.vertexBufferObject = null;
-    this.colourBufferObject = null;
     this.indexBufferObject = null;
   }
 
@@ -62,29 +69,46 @@ public class Mesh implements IMesh {
     this.vertexArrayObject = glGenVertexArrays();
     glBindVertexArray(this.vertexArrayObject);
 
-    final FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 3);
+    final int vertexSize = POSITION_SIZE + COLOUR_SIZE + TEXTURE_SIZE;
+    final FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * vertexSize);
     this.vertices.stream()
-        .map(Vertex::getPosition)
-        .flatMap(position -> Stream.of(position.x, position.y, position.z))
+        .flatMap(vertex -> {
+          final Vector3f position = vertex.getPosition();
+          final Vector4f colour = vertex.getColour();
+          final Vector2f texture = vertex.getTexture();
+          return Stream.of(
+              position.x, position.y, position.z,
+              colour.x, colour.y, colour.z, colour.w,
+              texture.x, texture.y
+          );
+        })
         .forEach(vertexBuffer::put);
     vertexBuffer.flip();
-    this.vertexBufferObject = this.storeFloatBuffer(vertexBuffer, 0, 3);
 
-    final FloatBuffer colourBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 4);
-    this.vertices.stream()
-        .map(Vertex::getColour)
-        .flatMap(colour -> Stream.of(colour.x, colour.y, colour.z, colour.w))
-        .forEach(colourBuffer::put);
-    colourBuffer.flip();
-    this.colourBufferObject = this.storeFloatBuffer(colourBuffer, 1, 4);
+    this.vertexBufferObject = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, this.vertexBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
-    final FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(this.vertices.size() * 2);
-    this.vertices.stream()
-        .map(Vertex::getTexture)
-        .flatMap(texture -> Stream.of(texture.x, texture.y))
-        .forEach(textureBuffer::put);
-    textureBuffer.flip();
-    this.textureBufferObject = this.storeFloatBuffer(textureBuffer, 2, 2);
+    this.storeFloatBuffer(
+        0,
+        POSITION_SIZE,
+        vertexSize,
+        0
+    );
+    this.storeFloatBuffer(
+        1,
+        COLOUR_SIZE,
+        vertexSize,
+        POSITION_SIZE
+    );
+    this.storeFloatBuffer(
+        2,
+        TEXTURE_SIZE,
+        vertexSize,
+        (POSITION_SIZE + COLOUR_SIZE)
+    );
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     final IntBuffer indicesBuffer = MemoryUtil.memAllocInt(this.indices.size());
     this.indices.forEach(indicesBuffer::put);
@@ -97,47 +121,30 @@ public class Mesh implements IMesh {
 
     // Free up buffers.
     MemoryUtil.memFree(vertexBuffer);
-    MemoryUtil.memFree(colourBuffer);
     MemoryUtil.memFree(indicesBuffer);
-    MemoryUtil.memFree(textureBuffer);
   }
 
-  private int storeFloatBuffer(
-      final FloatBuffer buffer,
+  private void storeFloatBuffer(
       final int index,
-      final int size
+      final int size,
+      final int stride,
+      final int pointer
   ) {
-    final int bufferId = glGenBuffers();
-    glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-    glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-    glVertexAttribPointer(index, size, GL_FLOAT, false, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    return bufferId;
+    glVertexAttribPointer(
+        index,
+        size,
+        GL_FLOAT,
+        false,
+        stride * Float.BYTES,
+        (long) pointer * Float.BYTES
+    );
   }
 
   public void cleanup() {
     glDeleteBuffers(this.vertexBufferObject);
-    glDeleteBuffers(this.colourBufferObject);
     glDeleteBuffers(this.indexBufferObject);
-    glDeleteBuffers(this.textureBufferObject);
 
     glDeleteVertexArrays(this.vertexArrayObject);
-  }
-
-
-  @Override
-  public int getVertexBufferObject() {
-    return this.vertexBufferObject;
-  }
-
-  @Override
-  public int getIndexBufferObject() {
-    return this.indexBufferObject;
-  }
-
-  @Override
-  public int getColourBufferObject() {
-    return this.colourBufferObject;
   }
 
   @Override
