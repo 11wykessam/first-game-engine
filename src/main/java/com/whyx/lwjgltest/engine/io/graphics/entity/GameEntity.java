@@ -113,4 +113,14 @@ public class GameEntity implements IGameEntity {
     this.scale = scale;
     this.updateWorldMatrix();
   }
+
+  @Override
+  public void init() {
+    this.mesh.init();
+  }
+
+  @Override
+  public void cleanup() {
+    this.mesh.cleanup();
+  }
 }

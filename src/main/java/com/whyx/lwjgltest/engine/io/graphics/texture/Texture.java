@@ -106,6 +106,14 @@ public class Texture implements ITexture {
    */
   @Override
   public void unbind() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
+  /**
+   * Clean up resources used by the texture.
+   */
+  @Override
+  public void cleanup() {
     glDeleteTextures(this.textureId);
   }
 }

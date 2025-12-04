@@ -145,6 +145,10 @@ public class Mesh implements IMesh {
     glDeleteBuffers(this.indexBufferObject);
 
     glDeleteVertexArrays(this.vertexArrayObject);
+
+    if (this.texture != null) {
+      this.texture.cleanup();
+    }
   }
 
   @Override

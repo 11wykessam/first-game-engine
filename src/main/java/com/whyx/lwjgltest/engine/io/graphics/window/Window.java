@@ -50,6 +50,7 @@ import lombok.Setter;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -205,6 +206,8 @@ public class Window implements IWindow {
     createCapabilities();
     // Enable v-sync
     glfwSwapInterval(1);
+
+    GL33.glPolygonMode( GL33.GL_FRONT_AND_BACK, GL33.GL_LINE );
 
     // Make the window visible
     glfwShowWindow(this.windowId);

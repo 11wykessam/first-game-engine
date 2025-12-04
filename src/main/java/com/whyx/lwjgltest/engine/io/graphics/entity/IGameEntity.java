@@ -130,4 +130,14 @@ public interface IGameEntity {
    * @param scale factor to scale by.
    */
   void setScale(final Float scale);
+
+  /**
+   * Initialise the entity.
+   */
+  void init();
+
+  /**
+   * Clean up resources used by the entity.
+   */
+  void cleanup();
 }

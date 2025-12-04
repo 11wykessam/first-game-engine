@@ -28,6 +28,7 @@ import com.whyx.lwjgltest.engine.io.graphics.renderer.Renderer;
 import com.whyx.lwjgltest.engine.io.graphics.shader.Shader;
 import com.whyx.lwjgltest.engine.io.graphics.texture.Texture;
 import com.whyx.lwjgltest.engine.io.graphics.window.IWindow;
+import com.whyx.lwjgltest.engine.utils.meshUtils.MeshUtils;
 import java.util.List;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
@@ -51,18 +52,16 @@ public class CubeGame implements IGameLogic {
   @Override
   public void init(final IWindow window) throws Exception {
     this.shader = new Shader(
-        "/shaders/cubeVertex.glsl",
-        "/shaders/cubeFragment.glsl",
+        "/shaders/whiteVertex.glsl",
+        "/shaders/whiteFragment.glsl",
         List.of(
             PROJECTION_MATRIX_UNIFORM,
             VIEW_MATRIX_UNIFORM,
-            WORLD_MATRIX_UNIFORM,
-            TEXTURE_SAMPLER_UNIFORM
+            WORLD_MATRIX_UNIFORM
+//            TEXTURE_SAMPLER_UNIFORM
         )
     );
     this.renderer = Renderer.builder().shader(this.shader).build();
-
-    final Texture texture = new Texture("/textures/cube.png");
 
     this.camera = Camera.builder()
         .fov((float) Math.toRadians(60))
@@ -75,11 +74,15 @@ public class CubeGame implements IGameLogic {
         .build();
 
     this.entity = GameEntity.builder()
-        .mesh(new CubeMesh(texture))
+        .mesh(MeshUtils.loadMesh(
+            "/models/bunny/bunny.obj"
+//            "/models/cube/cube.png"
+        ))
         .scale(1f)
         .rotation(new Vector3f(0.0f, 0.0f, 0.0f))
         .position(new Vector3f(0.0f, 0.0f, -2.0f))
         .build();
+    this.entity.init();
     this.shader.init();
 
     System.gc();
@@ -149,6 +152,6 @@ public class CubeGame implements IGameLogic {
 
   @Override
   public void cleanup() {
-    // TODO: cleanup mesh.
+    this.entity.cleanup();
   }
 }

@@ -16,9 +16,14 @@ public interface ITexture {
   void bind();
 
   /**
-   * Clean up resources used by texture.
+   * Unbind the texture after rendering.
    */
   void unbind();
+
+  /**
+   * Cleanup resources used by the texture.
+   */
+  void cleanup();
 
   /**
    * Get the id of this texture.
